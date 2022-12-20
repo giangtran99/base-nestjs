@@ -1,19 +1,17 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Controller } from '@nestjs/common';
+import { {{titleCase name}}Service } from './{{name}}.service';
+import { Create{{titleCase-removePlural name}}Dto } from './dto/create-{{removePlural name}}.dto';
+import { Update{{titleCase-removePlural name}}Dto } from './dto/update-{{removePlural name}}.dto';
+import { Crud, CrudController } from '@nestjsx/crud';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+import { {{titleCase-removePlural name}} } from './entities/{{removePlural name}}.entity';
 
-  
+@Crud({
+  model: {
+    type: {{titleCase-removePlural name}},
+  },
+})
+@Controller('{{name}}')
+export class {{titleCase name}}Controller implements CrudController<{{titleCase-removePlural name}}> {
+  constructor(public service: {{titleCase name}}Service) {}
 }

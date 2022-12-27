@@ -1,20 +1,39 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import {
+  Crud,
+  CrudController,
+  Override,
+  CrudRequest,
+  ParsedRequest,
+  ParsedBody,
+  CreateManyDto,
+  GetManyDefaultResponse,
+  CrudRequestInterceptor,
+  CrudService,
+} from '@nestjsx/crud';
+import { UseInterceptors } from '@nestjs/common';
+
+
 
 @Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+export class AuthController{
+  constructor(public authService: AuthService) { }
+  service: CrudService<User>;
+
 
   @Post("/register")
-  register(@Body() createAuthDto: CreateAuthDto) {
-    console.log({createAuthDto})
+  @UseInterceptors(CrudRequestInterceptor)
+  register( @ParsedRequest() req: CrudRequest, @Body() createAuthDto: CreateAuthDto) {
+    console.log({createAuthDto,req})
     const payload = {
       username: createAuthDto.username,
       password: createAuthDto.password
     }
-    return this.authService.register(payload)
+    return this.authService.register(req,payload)
   }
 
   @Post("/login")

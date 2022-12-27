@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
+import { CrudRequest } from '@nestjsx/crud';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
     };
   }
 
-  async register(user: CreateAuthDto) {
+  async register(req:CrudRequest,user: CreateAuthDto) {
     console.log({salt:process.env.BSCRYPT_SALT_OR_ROUNDS})
 
     const hashedPassword = await bcrypt.hash(user.password, parseInt(process.env.BSCRYPT_SALT_OR_ROUNDS));
@@ -41,7 +42,7 @@ export class AuthService {
       username: user.username,
       password: hashedPassword
     };
-    const createdUser = await this.usersService.createOne(null, payload)
+    const createdUser = await this.usersService.createOne(req,user)
     return {
       access_token: this.jwtService.sign(payload),
       user: createdUser

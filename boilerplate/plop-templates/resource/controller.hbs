@@ -3,9 +3,10 @@ import { {{titleCase name}}Service } from './{{name}}.service';
 import { Create{{titleCase-removePlural name}}Dto } from './dto/create-{{removePlural name}}.dto';
 import { Update{{titleCase-removePlural name}}Dto } from './dto/update-{{removePlural name}}.dto';
 import { Crud, CrudController } from '@nestjsx/crud';
-
 import { {{titleCase-removePlural name}} } from './entities/{{removePlural name}}.entity';
 
+
+//https://github.com/nestjsx/crud/wiki/Requests#search
 @Crud({
   model: {
     type: {{titleCase-removePlural name}},
@@ -14,4 +15,5 @@ import { {{titleCase-removePlural name}} } from './entities/{{removePlural name}
 @Controller('{{name}}')
 export class {{titleCase name}}Controller implements CrudController<{{titleCase-removePlural name}}> {
   constructor(public service: {{titleCase name}}Service) {}
+
 }

@@ -18,9 +18,13 @@ import {
 import { UseInterceptors } from '@nestjs/common';
 
 
-
+@Crud({
+  model: {
+    type: User,
+  }
+})
 @Controller('auth')
-export class AuthController{
+export class AuthController implements CrudController<User>{
   constructor(public authService: AuthService) { }
   service: CrudService<User>;
 

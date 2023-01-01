@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException ,BadRequestException} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
@@ -17,11 +17,18 @@ export class AuthService {
   async validateUser(user: CreateAuthDto): Promise<any> {
     const findedUser = await this.usersService.findOne({ where: { username: user.username } });
     const isMatch = await bcrypt.compare(user.password, findedUser.password);
-    if (findedUser && isMatch) {
+
+    if(!isMatch){
+      throw new BadRequestException('Something bad happened', { cause: new Error(), description: 'wr' })
+
+    }
+    if (findedUser) {
       const { password, ...result } = findedUser;
       return result;
     }
-    return null;
+
+
+
   }
 
   async login(user: CreateAuthDto) {
@@ -34,6 +41,7 @@ export class AuthService {
     };
   }
 
+
   async register(req:CrudRequest,user: CreateAuthDto) {
     console.log({salt:process.env.BSCRYPT_SALT_OR_ROUNDS})
 
@@ -42,10 +50,9 @@ export class AuthService {
       username: user.username,
       password: hashedPassword
     };
-    const createdUser = await this.usersService.createOne(req,user)
+    const createdUser = await this.usersService.createOne(req,payload)
     return {
-      access_token: this.jwtService.sign(payload),
-      user: createdUser
+      createdUser
     };
   }
 

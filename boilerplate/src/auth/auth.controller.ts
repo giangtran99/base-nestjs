@@ -32,7 +32,6 @@ export class AuthController implements CrudController<User>{
   @Post("/register")
   @UseInterceptors(CrudRequestInterceptor)
   register( @ParsedRequest() req: CrudRequest, @Body() createAuthDto: CreateAuthDto) {
-    console.log({createAuthDto,req})
     const payload = {
       username: createAuthDto.username,
       password: createAuthDto.password
@@ -48,6 +47,5 @@ export class AuthController implements CrudController<User>{
     }
     return this.authService.login(payload);
   }
-
 
 }

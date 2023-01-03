@@ -16,26 +16,21 @@ export class AuthService {
 
   async validateUser(user: CreateAuthDto): Promise<any> {
     const findedUser = await this.usersService.findOne({ where: { username: user.username } });
+    if (!findedUser) {
+      throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'username or password is wrong' });
+    }
+
     const isMatch = await bcrypt.compare(user.password, findedUser.password);
-
     if(!isMatch){
-      throw new BadRequestException('Something bad happened', { cause: new Error(), description: 'wr' })
-
+      throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'username or password is wrong' })
     }
-    if (findedUser) {
-      const { password, ...result } = findedUser;
-      return result;
-    }
-
-
-
+    const { password, ...result } = findedUser;
+    return result;
   }
 
   async login(user: CreateAuthDto) {
     const validatedUser = await this.validateUser(user);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+  
     return {
       access_token: this.jwtService.sign(validatedUser),
     };
@@ -43,7 +38,10 @@ export class AuthService {
 
 
   async register(req:CrudRequest,user: CreateAuthDto) {
-    console.log({salt:process.env.BSCRYPT_SALT_OR_ROUNDS})
+    const findedUser = await this.usersService.findOne({ where: { username: user.username } });
+    if(findedUser){
+      throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'username is existed' });
+    }
 
     const hashedPassword = await bcrypt.hash(user.password, parseInt(process.env.BSCRYPT_SALT_OR_ROUNDS));
     const payload = {
@@ -51,6 +49,9 @@ export class AuthService {
       password: hashedPassword
     };
     const createdUser = await this.usersService.createOne(req,payload)
+    if(!createdUser){
+      throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'register failed' });
+    }
     return {
       createdUser
     };

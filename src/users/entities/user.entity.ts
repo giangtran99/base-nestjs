@@ -5,6 +5,11 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({
+    type:"json"
+  })
+  roles: string[];
+
   @Column()
   username: string;
 

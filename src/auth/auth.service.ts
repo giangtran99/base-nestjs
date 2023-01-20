@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException ,BadRequestException} from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { CrudRequest } from '@nestjsx/crud';
+import Config from 'nest.config';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService
   ) { }
-  
+
 
   async validateUser(user: CreateAuthDto): Promise<any> {
     const findedUser = await this.usersService.findOne({ where: { username: user.username } });
@@ -21,7 +22,7 @@ export class AuthService {
     }
 
     const isMatch = await bcrypt.compare(user.password, findedUser.password);
-    if(!isMatch){
+    if (!isMatch) {
       throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'username or password is wrong' })
     }
     const { password, ...result } = findedUser;
@@ -30,16 +31,26 @@ export class AuthService {
 
   async login(user: CreateAuthDto) {
     const validatedUser = await this.validateUser(user);
-  
+    const refreshToken = this.jwtService.sign(validatedUser, {
+      expiresIn: Config.jwt.refreshTokenExpire
+    })
+    const accessToken = this.jwtService.sign(validatedUser, {
+      expiresIn: Config.jwt.accessTokenExpire
+    })
     return {
-      access_token: this.jwtService.sign(validatedUser),
+      access_token: accessToken,
+      refresh_token: refreshToken
     };
   }
 
+  async refreshToken(refreshToken: string) {
 
-  async register(req:CrudRequest,user: CreateAuthDto) {
+  }
+
+
+  async register(req: CrudRequest, user: CreateAuthDto) {
     const findedUser = await this.usersService.findOne({ where: { username: user.username } });
-    if(findedUser){
+    if (findedUser) {
       throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'username is existed' });
     }
 
@@ -48,8 +59,8 @@ export class AuthService {
       username: user.username,
       password: hashedPassword
     };
-    const createdUser = await this.usersService.createOne(req,payload)
-    if(!createdUser){
+    const createdUser = await this.usersService.createOne(req, payload)
+    if (!createdUser) {
       throw new UnauthorizedException('Something bad happened', { cause: new Error(), description: 'register failed' });
     }
     return {

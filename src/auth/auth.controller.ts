@@ -45,9 +45,7 @@ export class AuthController implements CrudController<User>{
   refreshToken(@Req() req : Request) {
       const refreshToken = req.cookies["refresh_token"]
       this.authService.refreshToken(refreshToken)
-
   }
-
 
   @Post("/login")
   @UseInterceptors(CrudRequestInterceptor)
@@ -61,16 +59,13 @@ export class AuthController implements CrudController<User>{
       username: createAuthDto.username,
       password: createAuthDto.password
     }
-    console.log({req})
     
     const { refresh_token, access_token } = await this.authService.login(payload);
     res.cookie('refresh_token', refresh_token, { httpOnly: true });
     
-    
     // console.log({aaa:res.header})
     return {
       access_token,
-      
     }
   }
 

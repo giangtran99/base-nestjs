@@ -7,6 +7,8 @@ import { {{titleCase-removePlural name}} } from './entities/{{removePlural name}
 import { JwtAuthGuard } from 'src/auth/guard-strategy/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guard-strategy/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
+import { ThrottlerGuard } from '@nestjs/throttler';
+// import { Cache } from 'cache-manager';
 
 
 //https://github.com/nestjsx/crud/wiki/Requests#search
@@ -15,16 +17,23 @@ import { Roles } from 'src/decorators/roles.decorator';
     type: {{titleCase-removePlural name}},
   },
 })
-@UseGuards(JwtAuthGuard,RolesGuard)
+@UseGuards(JwtAuthGuard,RolesGuard,ThrottlerGuard)
 @Controller('{{name}}')
 export class {{titleCase name}}Controller implements CrudController<{{titleCase-removePlural name}}> {
-  constructor(public service: {{titleCase name}}Service) {}
+  constructor(
+    public service: {{titleCase name}}Service,
+    // @Inject(CACHE_MANAGER) private cacheManager: Cache
+
+    ) {
+
+  }
   get base(): CrudController<{{titleCase-removePlural name}}> {
     return this;
   }
   
   @Override() 
   @Roles("admin")
+  @CacheTTL(60 * 3)
   getMany(
     @ParsedRequest() req: CrudRequest,
   ) {

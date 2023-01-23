@@ -31,9 +31,12 @@ export class AuthService {
 
   async login(user: CreateAuthDto) {
     const validatedUser = await this.validateUser(user);
+    console.log({sds:process.env.JWT_SECRET_REFRESH_TOKEN})
     const refreshToken = this.jwtService.sign(validatedUser, {
+      secret:process.env.JWT_SECRET_REFRESH_TOKEN,
       expiresIn: Config.jwt.refreshTokenExpire
     })
+
     const accessToken = this.jwtService.sign(validatedUser, {
       expiresIn: Config.jwt.accessTokenExpire
     })

@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { CacheInterceptor, CacheKey, CacheTTL, CACHE_MANAGER, Controller, Inject, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,8 +7,12 @@ import { CreateManyDto, Crud, CrudController, CrudRequest, Override, ParsedBody,
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guard-strategy/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guard-strategy/roles.guard';
-import { Roles } from 'src/decorators/roles.decorator';
+import { Roles } from 'decorators/roles.decorator';
+import { Request } from 'express';
+import { ThrottlerGuard } from '@nestjs/throttler';
+// import { Cache } from 'cache-manager';
 
+//https://github.com/nestjsx/crud/wiki/Requests#search
 @Crud({
   model: {
     type: User,
@@ -16,18 +20,24 @@ import { Roles } from 'src/decorators/roles.decorator';
 })
 @Controller('users')
 // @Roles("admin")
-@UseGuards(JwtAuthGuard,RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard,ThrottlerGuard)
 
 // @UseGuards(RolesGuard)
 export class UsersController implements CrudController<User> {
-  constructor(public service: UsersService) { }
+  constructor(
+    public service: UsersService,
+    // @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) { }
   get base(): CrudController<User> {
     return this;
   }
-  
-  @Override() 
+
+  @Override()
   @Roles("admin")
-  getMany(
+  // @CacheTTL(60 * 5)
+  @UseInterceptors(CacheInterceptor)
+  async getMany(
+    @Req() expressReq : Request,
     @ParsedRequest() req: CrudRequest,
   ) {
     return this.base.getManyBase(req);

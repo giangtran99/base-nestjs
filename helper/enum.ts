@@ -7,5 +7,5 @@ export const enum CACHE_STORE {
          /**
      * Use local memory for cache
      */
-    LOCAL_MEMORY = "local-memory"
+    LOCAL_MEMORY = "local_memory"
 }

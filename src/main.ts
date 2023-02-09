@@ -20,7 +20,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(helmet());
 
-  await app.listen(3000);
+  await app.listen(3002);
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());

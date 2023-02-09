@@ -43,7 +43,11 @@ const Config = {
       origin: 'http://localhost:3001',
       credentials: true,
       
-    } as CorsOptions
+    } as CorsOptions,
+    rateLimit:{
+      ttl:60,
+      limit:60
+    }
 }
 
 export default Config

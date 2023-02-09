@@ -10,7 +10,7 @@ export default function (plop) {
         type: 'input',
         name: 'name',
         description: "modelName + 's'",
-        message: "Type model's name that u want add CRUD:",
+        message: "Type model's name that u want add CRUD (Plural ModelName):",
       },
     ],
     actions: [

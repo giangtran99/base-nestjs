@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipeBuilder, Res, StreamableFile, Header } from '@nestjs/common';
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 
 @Controller('file')
 export class FileController {
@@ -41,4 +43,13 @@ export class FileController {
       file: file,
     };
   }
+
+  @Get()
+  @Header('Content-Type', 'application/json')
+  @Header('Content-Disposition', 'attachment; filename="package.json"')
+  getStaticFile(): StreamableFile {
+    const file = createReadStream(join(process.cwd(), 'package.json'));
+    return new StreamableFile(file);
+  } 
+
 }

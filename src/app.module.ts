@@ -5,20 +5,19 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/auth.service';
-import { AuthController } from './auth/auth.controller';
-import { AuthencationMiddleware } from '../middlewares/auth.middleware';
 import { FileModule } from './file/file.module';
 import Config from 'nest.config';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bull';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 
 
 // console.log("vo ly",process.env.MYSQL_DATABASE_HOS)
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: ['.env', '.development.env'],
       isGlobal: true,
@@ -34,17 +33,19 @@ import { ThrottlerModule } from '@nestjs/throttler';
       synchronize: true,
     }),
     ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 10,
+      ttl: Config.rateLimit.ttl,
+      limit: Config.rateLimit.limit,
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'uploads'),
-    //   serveStaticOptions: {
-    //   }
-    // }),
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
     UsersModule,
     AuthModule,
     FileModule,
+    TasksModule
   ],
   controllers: [AppController],
   providers: [AppService],

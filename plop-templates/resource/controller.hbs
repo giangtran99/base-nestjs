@@ -6,7 +6,7 @@ import { CreateManyDto, Crud, CrudController, CrudRequest, Override, ParsedBody,
 import { {{titleCase-removePlural name}} } from './entities/{{removePlural name}}.entity';
 import { JwtAuthGuard } from 'src/auth/guard-strategy/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guard-strategy/roles.guard';
-import { Roles } from 'src/decorators/roles.decorator';
+import { Roles } from '../../decorators/roles.decorator';
 import { ThrottlerGuard } from '@nestjs/throttler';
 // import { Cache } from 'cache-manager';
 
@@ -33,7 +33,7 @@ export class {{titleCase name}}Controller implements CrudController<{{titleCase-
   
   @Override() 
   @Roles("admin")
-  @CacheTTL(60 * 3)
+  //@CacheTTL(60 * 3)
   getMany(
     @ParsedRequest() req: CrudRequest,
   ) {

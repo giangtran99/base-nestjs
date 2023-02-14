@@ -9,7 +9,7 @@ export class User {
     type:"json"
   })
   roles: string[];
-  
+
   @Column()
   balance: number;
 
@@ -18,9 +18,6 @@ export class User {
 
   @Column()
   password: string;
-
-  @Column()
-  balance: number;
 
   @Column({ default: true })
   isActive: boolean;

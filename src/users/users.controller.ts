@@ -1,4 +1,4 @@
-import { CacheInterceptor, CacheKey, CacheTTL, CACHE_MANAGER, Controller, Get, Inject, Req, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, CacheInterceptor, CacheKey, CacheTTL, CACHE_MANAGER, Controller, Get, Inject, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
-import { isMainThread,parentPort,Worker, workerData } from 'worker_threads';
+import { isMainThread, parentPort, Worker, workerData } from 'worker_threads';
 import { rejects } from 'assert';
 // import { Cache } from 'cache-manager';
 
@@ -114,29 +114,29 @@ export class UsersController implements CrudController<User> {
       hanledUser
     }
 
-      // const users = await this.service.getMany(req) as any
-      // // var hanledUser = []
-      // const usersBuffer = users
-      // const promises = []
-      // for (let i = 0; i < users.length; i++) {
-      //   promises.push(new Promise((resolve,reject)=>{
-      //     const worker = new Worker("./src/users/users.worker.ts");
-      //     worker.postMessage({ workerData: { usersBuffer, index: i }})
-      //     worker.once('message', (message) => {
-      //       // console.log(message);  // Prints 'Hello, world!'.
-      //       resolve(message)
-      //     });
-      //     worker.once("error",(err)=>{
-      //       console.log(err);  // Prints 'Hello, world!'.
-      //       reject(err)
-      //     })
-      //   }))
-      // }
-      // // console.log({promises})
-      // const hanledUser = await Promise.all(promises)
-      // return {
-      //   hanledUser
-      // }
+    // const users = await this.service.getMany(req) as any
+    // // var hanledUser = []
+    // const usersBuffer = users
+    // const promises = []
+    // for (let i = 0; i < users.length; i++) {
+    //   promises.push(new Promise((resolve,reject)=>{
+    //     const worker = new Worker("./src/users/users.worker.ts");
+    //     worker.postMessage({ workerData: { usersBuffer, index: i }})
+    //     worker.once('message', (message) => {
+    //       // console.log(message);  // Prints 'Hello, world!'.
+    //       resolve(message)
+    //     });
+    //     worker.once("error",(err)=>{
+    //       console.log(err);  // Prints 'Hello, world!'.
+    //       reject(err)
+    //     })
+    //   }))
+    // }
+    // // console.log({promises})
+    // const hanledUser = await Promise.all(promises)
+    // return {
+    //   hanledUser
+    // }
 
   }
 
@@ -167,6 +167,24 @@ export class UsersController implements CrudController<User> {
       result: result
     }
   }
+
+  @Post("/transfer")
+  @UseInterceptors(CrudRequestInterceptor)
+  async tranfer(
+    @ParsedRequest() req: CrudRequest,
+    @Body() tranferInfo: {senderId:number,receiverId:number,amount:number}
+  ) {
+    console.log({tranferInfo:tranferInfo})
+    return this.service.tranfer(tranferInfo.receiverId,tranferInfo.senderId,tranferInfo.amount)
+  }
+
+
+  @Post("/topup")
+  async topup() {
+
+  }
+
+
 
 
 

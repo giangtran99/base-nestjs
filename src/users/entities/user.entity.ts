@@ -9,6 +9,9 @@ export class User {
     type:"json"
   })
   roles: string[];
+  
+  @Column()
+  balance: number;
 
   @Column()
   username: string;

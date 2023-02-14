@@ -38,7 +38,7 @@ export class UsersController implements CrudController<User> {
   }
 
   @Override()
-  @Roles("admin")
+  // @Roles("admin")
   // @CacheTTL(60 * 5)
   // @UseInterceptors(CacheInterceptor)
   async getMany(

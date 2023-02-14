@@ -19,6 +19,9 @@ Case 2 : use PM2 run cluster with 4 intances
 Case 3 : use PM2 ,reverse proxy use Nginx
 + Average RPS : 77.3
 
+Case 4 : Run autocanon in Node 2 with local network
++ Average RPS : 646.62
+
 --------------
 Deploy in Node 2 
 Case 1 : use PM2 
@@ -31,7 +34,11 @@ Case 3 : use PM2 ,reverse proxy use Nginx
 + Average RPS : 4384.24
 
 ----------------
+Deploy in Node 1 and Node 2 , connect to mysql run in Node 1 , Nginx
++ Average RPS : 177.9
 
-Deploy in Node 1 and Node 2 , Mysql run in Node 2 , Nginx
-+ Average RPS :
+----------------
+Deploy in Node 1 and Node 2 , Mysql run in Node 2 , Nginx , Replication Mysql
+
+
 
